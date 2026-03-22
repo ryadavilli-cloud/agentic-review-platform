@@ -12,7 +12,7 @@ build/
 .env.local
 
 # IDE
-.vscode/settings.json
+.vscode/*.local.json
 .idea/
 
 # Tools
