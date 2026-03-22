@@ -33,3 +33,15 @@ markers = [
     "slow: mark test as slow (e.g., requires API calls)"
 ]
 asyncio_mode = "auto"
+addopts = "--cov=app --cov-branch --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+omit = [
+    "app/**/__init__.py"
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
