@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     llm_model: str = "gpt-4.1-mini"
     anthropic_api_key: str = ""
+    applicationinsights_connection_string: str = ""
 
     model_config = SettingsConfigDict(env_file=".env")
 
