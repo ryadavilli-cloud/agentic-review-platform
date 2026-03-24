@@ -11,6 +11,7 @@ class ReviewRequest(BaseModel):
     repository_url: str | None = None
     code_snippet: str | None = None
     review_type: ReviewType = ReviewType.security
+    options: dict[str, object] | None = None
 
     @model_validator(mode="after")
     def validate_request(self) -> Self:

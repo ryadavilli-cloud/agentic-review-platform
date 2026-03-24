@@ -8,7 +8,7 @@ from app.models.enums import FindingCategory, Severity, StepStatus
 from app.models.finding import Evidence, Finding
 from app.models.report import ReportMetadata, SecurityReport
 from app.models.review import ReviewRequest
-from app.models.tools import ToolResult
+from app.models.tools import SafetyResult, SemgrepResult, ToolResult
 
 
 @pytest.mark.unit
@@ -167,3 +167,52 @@ def test_execution_plan_multiple_planned_steps():
     )
 
     assert len(plan.steps) == 2
+
+
+@pytest.mark.unit
+def test_model_json_finding():
+    finding = Finding(
+        title="Test Finding",
+        description="This is a test finding.",
+        confidence=0.5,
+        severity=Severity.high,
+        category=FindingCategory.vulnerability,
+        evidence=Evidence(
+            tool_name="TestTool",
+            raw_output="Raw output from tool",
+            file_path="src/app.py",
+            line_start=10,
+            line_end=20,
+        ),
+    )
+
+    json_data = finding.model_dump_json()
+
+    new_finding = Finding.model_validate_json(json_data)
+    assert new_finding.id is not None
+    assert new_finding.title == finding.title
+    assert new_finding.evidence.tool_name == finding.evidence.tool_name
+
+
+@pytest.mark.unit
+def test_semgrep_result_defaults():
+    result = SemgrepResult(
+        rules_matched=0,
+        files_scanned=0,
+        raw_output="",
+        success=False,
+        execution_time_seconds=0.0,
+    )
+
+    assert result.tool_name == "semgrep"
+
+
+@pytest.mark.unit
+def test_safety_result_valid():
+    result = SafetyResult(
+        raw_output="{}",
+        success=True,
+        execution_time_seconds=30.0,
+    )
+
+    assert result.tool_name == "safety"
