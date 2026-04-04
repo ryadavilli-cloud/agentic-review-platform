@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, field_validator
 
 
 class Metadata(BaseModel):
@@ -12,6 +14,15 @@ class Metadata(BaseModel):
     vulnerability_class: list[str] | None = None
     subcategory: list[str] | None = None
     source: str | None = None
+
+    @field_validator("owasp", mode="before")
+    @classmethod
+    def normalize_owasp(cls, v: Any) -> Any:
+        # If it's a single string, wrap it in a list
+        if isinstance(v, str):
+            return [v]
+        # If it's already a list or None, return as is
+        return v
 
 
 class Extra(BaseModel):

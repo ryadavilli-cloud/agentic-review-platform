@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from app.models.enums import Severity
@@ -341,3 +343,22 @@ def test_semgrep_transform_output_opetional_missing():
     result = semgrep_tool.transform_semgrep_output(raw_output, execution_time)
 
     assert result.success is True
+
+
+@pytest.mark.unit
+def test_semgrep_transform_output_actual():
+    semgrep_tool = SemgrepTool()
+
+    base_directory = Path(__file__).resolve().parent
+    test_data_path = base_directory / "semgrep_actual.json"
+    with open(test_data_path) as f:
+        raw_output = f.read()
+
+    execution_time = 0.0
+
+    result = semgrep_tool.transform_semgrep_output(raw_output, execution_time)
+
+    assert result.success is True
+    assert len(result.parsed_findings) == 27
+    assert result.rules_matched == 27
+    assert result.files_scanned == 1

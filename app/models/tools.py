@@ -18,7 +18,7 @@ class SemgrepResult(ToolResult):
     files_scanned: int
 
 
-class SafetyResult(ToolResult):
-    tool_name: str = "safety"
+class PipAuditResult(ToolResult):
+    tool_name: str = "pip-audit"
     packages_scanned: int = 0
     vulnerabilities_found: int = 0

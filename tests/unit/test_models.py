@@ -8,7 +8,7 @@ from app.models.enums import FindingCategory, Severity, StepStatus
 from app.models.finding import Evidence, Finding
 from app.models.report import ReportMetadata, SecurityReport
 from app.models.review import ReviewRequest
-from app.models.tools import SafetyResult, SemgrepResult, ToolResult
+from app.models.tools import PipAuditResult, SemgrepResult, ToolResult
 
 
 @pytest.mark.unit
@@ -208,11 +208,11 @@ def test_semgrep_result_defaults():
 
 
 @pytest.mark.unit
-def test_safety_result_valid():
-    result = SafetyResult(
+def test_pip_audit_result_valid():
+    result = PipAuditResult(
         raw_output="{}",
         success=True,
         execution_time_seconds=30.0,
     )
 
-    assert result.tool_name == "safety"
+    assert result.tool_name == "pip-audit"

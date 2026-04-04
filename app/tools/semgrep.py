@@ -1,3 +1,5 @@
+import asyncio
+import os
 from datetime import datetime
 
 from app.models.enums import FindingCategory, Severity
@@ -16,16 +18,52 @@ class SemgrepTool(BaseTool):
         self.common_logger(f"Running {self.tool_name} on {target_path}")
         # In a real implementation, run the semgrep command and get the output
         # catpure the raw output and time, then call transform_semgrep_output to parse.
-        timer_start = datetime.now()
-        time_end = datetime.now()
-        execution_time = time_end - timer_start
 
-        str_results = ""
+        try:
+            env = {**os.environ, "PYTHONUTF8": "1"}
 
-        # Transform the output and return it. For now, use simulated result.
-        return self.transform_semgrep_output(
-            str_results, execution_time.total_seconds()
-        )
+            timer_start = datetime.now()
+
+            command = f"semgrep scan --json --config=auto {target_path}"
+
+            process = await asyncio.create_subprocess_shell(
+                command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                env=env,
+            )
+            stdout, stderr = await process.communicate()
+
+            time_end = datetime.now()
+            execution_time = time_end - timer_start
+
+            if process.returncode is not None and process.returncode <= 1:
+                self.common_logger(f"Semgrep Success: {stderr.decode()}")
+
+                str_results = stdout.decode()
+
+                # Transform the output and return it. For now, use simulated result.
+                return self.transform_semgrep_output(
+                    str_results, execution_time.total_seconds()
+                )
+            else:
+                self.common_logger(
+                    f"Semgrep Failed in {execution_time.total_seconds()} seconds"
+                )
+
+                return SemgrepResult(
+                    tool_name=self.tool_name,
+                    raw_output=stderr.decode(),
+                    success=False,
+                    parsed_findings=[],
+                    execution_time_seconds=execution_time.total_seconds(),
+                    rules_matched=0,
+                    files_scanned=0,
+                )
+
+        except Exception as e:
+            self.common_logger(f"Error occurred while running {self.tool_name}: {e}")
+            raise
 
     def transform_semgrep_output(
         self, raw_output: str, execution_time: float
