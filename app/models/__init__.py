@@ -3,7 +3,7 @@ from .enums import AnalysisStatus, FindingCategory, ReviewType, Severity, StepSt
 from .finding import Evidence, Finding
 from .report import ReportMetadata, SecurityReport
 from .review import ReviewRequest
-from .tools import SafetyResult, SemgrepResult, ToolResult
+from .tools import PipAuditResult, SemgrepResult, ToolResult
 
 __all__ = [
     "ExecutionPlan",
@@ -16,7 +16,7 @@ __all__ = [
     "Evidence",
     "Finding",
     "ReviewRequest",
-    "SafetyResult",
+    "PipAuditResult",
     "SemgrepResult",
     "ToolResult",
     "ReportMetadata",
