@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "code_findings": [
+    {"id": "CODE-012", "tool": "semgrep", "type": "hardcoded-secret", "file": "app.py", "line": 13, "severity": "high", "detectable": false, "detectable_reason": "Semgrep OSS lacks generic secret detection"}
+  ],
+  "dependency_findings": [
+    {"id": "DEP-001", "tool": "pip-audit", "package": "flask", "version": "2.3.2", "cve": "CVE-2026-27205", "severity": "critical", "detectable": true, "planned": true}
+  ]
+}

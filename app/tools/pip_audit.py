@@ -60,6 +60,7 @@ class PipAuditTool(BaseTool):
         print("Starting pip-audit server with stdio transport")
         async with stdio_client(server_params) as (read, write):  # noqa: SIM117
             async with ClientSession(read, write) as session:
+                await session.initialize()
                 mcp_result = await session.call_tool(
                     "scan_requirements", arguments={"target_path": target_path}
                 )
