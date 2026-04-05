@@ -40,7 +40,8 @@ addopts = "--cov=app --cov-branch --cov-report=term-missing"
 source = ["app"]
 branch = true
 omit = [
-    "app/**/__init__.py"
+    "app/**/__init__.py",
+    "app/tools/pip_audit_server.py"
 ]
 
 [tool.coverage.report]
