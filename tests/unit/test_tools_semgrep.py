@@ -91,7 +91,7 @@ def test_semgrep_transform_output_valid():
 
     result = semgrep_tool.transform_semgrep_output(raw_output, execution_time)
 
-    assert result.tool_name == "Semgrep"
+    assert result.tool_name == "semgrep"
     assert result.success is True
     assert len(result.parsed_findings) > 0
     assert result.execution_time_seconds == execution_time
@@ -124,7 +124,7 @@ def test_semgrep_transform_output_empty():
 
     result = semgrep_tool.transform_semgrep_output(raw_output, execution_time)
 
-    assert result.tool_name == "Semgrep"
+    assert result.tool_name == "semgrep"
     # assert result.raw_output == raw_output
     assert result.success is True
     assert result.files_scanned == 1
@@ -220,7 +220,7 @@ def test_semgrep_transform_output_severity():
 
     result = semgrep_tool.transform_semgrep_output(raw_output, execution_time)
 
-    assert result.tool_name == "Semgrep"
+    assert result.tool_name == "semgrep"
     assert result.success is True
     assert len(result.parsed_findings) == 3
     assert result.parsed_findings[0].severity == Severity.high

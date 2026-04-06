@@ -15,14 +15,12 @@ async def scan_requirements(target_path: str) -> str:
     if not file_path.is_file():
         return f"Error: File '{target_path}' not found."
 
-    # create the subprocess for pip-audit
-    command = f"pip-audit -r {target_path} -f json"
-
     try:
         env = {**os.environ, "PYTHONUTF8": "1"}
 
-        process = await asyncio.create_subprocess_shell(
-            command,
+        command = ["pip-audit", "-r", str(target_path), "-f", "json"]
+        process = await asyncio.create_subprocess_exec(
+            *command,
             stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,

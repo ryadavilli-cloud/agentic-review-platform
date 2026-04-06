@@ -17,4 +17,3 @@ class BaseTool(ABC):
     def common_logger(self, message: str) -> None:
         logger = logging.getLogger(self.tool_name)
         logger.info(message)
-        pass

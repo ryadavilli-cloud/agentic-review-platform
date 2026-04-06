@@ -1,10 +1,12 @@
 import asyncio
+import logging
 import os
 from datetime import datetime
 
 from app.models.enums import FindingCategory, Severity
 from app.models.finding import Evidence, Finding
 from app.models.tools import SemgrepResult
+from app.telemetry.helpers import create_span, log_with_context
 from app.tools.base import BaseTool
 from app.tools.semgrep_results import SemgrepToolResults
 
@@ -12,58 +14,96 @@ from app.tools.semgrep_results import SemgrepToolResults
 class SemgrepTool(BaseTool):
     @property
     def tool_name(self) -> str:
-        return "Semgrep"
+        return "semgrep"
 
     async def run(self, target_path: str) -> SemgrepResult:
-        self.common_logger(f"Running {self.tool_name} on {target_path}")
-        # In a real implementation, run the semgrep command and get the output
-        # catpure the raw output and time, then call transform_semgrep_output to parse.
+        with create_span("tool.semgrep") as span:
+            # In a real implementation, run the semgrep command and get the output
+            # catpure the raw output and time,
+            # then call transform_semgrep_output to parse.
 
-        try:
-            env = {**os.environ, "PYTHONUTF8": "1"}
+            try:
+                timer_start = datetime.now()
+                env = {**os.environ, "PYTHONUTF8": "1"}
+                command = ["semgrep", "scan", "--json", "--config=auto", target_path]
 
-            timer_start = datetime.now()
-
-            command = f"semgrep scan --json --config=auto {target_path}"
-
-            process = await asyncio.create_subprocess_shell(
-                command,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-                env=env,
-            )
-            stdout, stderr = await process.communicate()
-
-            time_end = datetime.now()
-            execution_time = time_end - timer_start
-
-            if process.returncode is not None and process.returncode <= 1:
-                self.common_logger(f"Semgrep Success: {stderr.decode()}")
-
-                str_results = stdout.decode()
-
-                # Transform the output and return it. For now, use simulated result.
-                return self.transform_semgrep_output(
-                    str_results, execution_time.total_seconds()
-                )
-            else:
-                self.common_logger(
-                    f"Semgrep Failed in {execution_time.total_seconds()} seconds"
+                log_with_context(
+                    message=f"Running Semgrep command: {' '.join(command)}",
+                    span=span,
+                    logger_name="tool.semgrep",
                 )
 
-                return SemgrepResult(
-                    tool_name=self.tool_name,
-                    raw_output=stderr.decode(),
-                    success=False,
-                    parsed_findings=[],
-                    execution_time_seconds=execution_time.total_seconds(),
-                    rules_matched=0,
-                    files_scanned=0,
+                process = await asyncio.create_subprocess_exec(
+                    *command,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                    env=env,
                 )
 
-        except Exception as e:
-            self.common_logger(f"Error occurred while running {self.tool_name}: {e}")
-            raise
+                stdout, stderr = await process.communicate()
+
+                time_end = datetime.now()
+                execution_time = time_end - timer_start
+
+                log_with_context(
+                    message=f"Semgrep command completed: "
+                    f"stdout length: {len(stdout)}, stderr length: {len(stderr)}",
+                    span=span,
+                    extra={"execution_time_seconds": execution_time.total_seconds()},
+                    logger_name="tool.semgrep",
+                )
+
+                if process.returncode is not None and process.returncode <= 1:
+                    log_with_context(
+                        message="Semgrep Succeeded, calling transform",
+                        span=span,
+                        logger_name="tool.semgrep",
+                    )
+
+                    str_results = stdout.decode()
+
+                    # Transform the output and return it. For now, use simulated result.
+                    transformed_results = self.transform_semgrep_output(
+                        str_results, execution_time.total_seconds()
+                    )
+
+                    log_with_context(
+                        message="Semgrep Succeeded",
+                        span=span,
+                        extra={"transformed_results": transformed_results},
+                        logger_name="tool.semgrep",
+                    )
+                    return transformed_results
+                else:
+                    log_with_context(
+                        message="Semgrep Failed",
+                        span=span,
+                        level=logging.ERROR,
+                        extra={
+                            "execution_time_seconds": execution_time.total_seconds()
+                        },
+                        logger_name="tool.semgrep",
+                    )
+
+                    return SemgrepResult(
+                        tool_name=self.tool_name,
+                        raw_output=stderr.decode(),
+                        success=False,
+                        parsed_findings=[],
+                        execution_time_seconds=execution_time.total_seconds(),
+                        rules_matched=0,
+                        files_scanned=0,
+                    )
+
+            except Exception as ex:
+                log_with_context(
+                    message="Semgrep Failed",
+                    span=span,
+                    level=logging.CRITICAL,
+                    extra={"exception": ex},
+                    logger_name="tool.semgrep",
+                )
+                raise
 
     def transform_semgrep_output(
         self, raw_output: str, execution_time: float
