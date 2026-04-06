@@ -58,7 +58,9 @@ def test_transform_pip_audit_output_multiple_vulns():
 }
     """
 
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 3
     assert pip_audit_result.vulnerabilities_found == 3
@@ -79,7 +81,9 @@ def test_transform_pip_audit_output_empty_dependencies():
     }
     """
 
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 0
     assert pip_audit_result.vulnerabilities_found == 0
@@ -114,7 +118,9 @@ def test_transform_pip_audit_output_all_clean():
 }
     """
 
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 3
     assert pip_audit_result.vulnerabilities_found == 0
@@ -173,7 +179,9 @@ def test_transform_pip_audit_output_severity_mapping():
   "fixes": []
 }
 """
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 3
     assert pip_audit_result.vulnerabilities_found == 3
@@ -209,7 +217,9 @@ def test_transform_pip_audit_output_missing_optional_fields():
   "fixes": []
 }
 """
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 1
     assert pip_audit_result.vulnerabilities_found == 1
@@ -252,7 +262,9 @@ def test_transform_pip_audit_output_duplicate_vuln_ids():
   "fixes": []
 }
 """
-    pip_audit_result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    pip_audit_result = pip_audit_tool.transform_pip_audit_output(
+        "requirements.txt", raw_output
+    )
     assert pip_audit_result.success is True
     assert pip_audit_result.packages_scanned == 1
     assert pip_audit_result.vulnerabilities_found == 2
@@ -270,7 +282,7 @@ def test_transform_pip_audit_output_error_string_raises_validation_error():
     raw_output = "Error: File 'bad.txt' not found."
 
     with pytest.raises(ValidationError):
-        tool.transform_pip_audit_output(raw_output)
+        tool.transform_pip_audit_output("requirements.txt", raw_output)
 
 
 # Test 8 — Evidence fields correct. Verify that each Finding.evidence has
@@ -312,7 +324,7 @@ def test_transform_pip_audit_output_evidence_fields():
   "fixes": []
 }
 """
-    result = pip_audit_tool.transform_pip_audit_output(raw_output)
+    result = pip_audit_tool.transform_pip_audit_output("requirements.txt", raw_output)
 
     assert result.vulnerabilities_found == 2
     assert len(result.parsed_findings) == 2
