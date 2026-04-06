@@ -489,7 +489,7 @@ def test_dep_unmatched_cve():
         ]
     )
 
-    actual_findings = []
+    actual_findings: list[Finding] = []
 
     raw_scan = make_raw_scan(
         dependencies=[
