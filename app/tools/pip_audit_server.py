@@ -25,7 +25,6 @@ async def scan_requirements(target_path: str) -> str:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             env=env,
-            text=False,  # Ensure stdout/stderr are strings, not bytes
         )
         stdout, stderr = await process.communicate()
 

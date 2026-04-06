@@ -17,7 +17,7 @@ class SemgrepTool(BaseTool):
         return "semgrep"
 
     async def run(self, target_path: str) -> SemgrepResult:
-        with create_span("tool.semgrep") as span:
+        with create_span("tool.semgrep"):
             # In a real implementation, run the semgrep command and get the output
             # catpure the raw output and time,
             # then call transform_semgrep_output to parse.
@@ -29,7 +29,6 @@ class SemgrepTool(BaseTool):
 
                 log_with_context(
                     message=f"Running Semgrep command: {' '.join(command)}",
-                    span=span,
                     logger_name="tool.semgrep",
                 )
 
@@ -48,7 +47,6 @@ class SemgrepTool(BaseTool):
                 log_with_context(
                     message=f"Semgrep command completed: "
                     f"stdout length: {len(stdout)}, stderr length: {len(stderr)}",
-                    span=span,
                     extra={"execution_time_seconds": execution_time.total_seconds()},
                     logger_name="tool.semgrep",
                 )
@@ -56,7 +54,6 @@ class SemgrepTool(BaseTool):
                 if process.returncode is not None and process.returncode <= 1:
                     log_with_context(
                         message="Semgrep Succeeded, calling transform",
-                        span=span,
                         logger_name="tool.semgrep",
                     )
 
@@ -69,7 +66,6 @@ class SemgrepTool(BaseTool):
 
                     log_with_context(
                         message="Semgrep Succeeded",
-                        span=span,
                         extra={"transformed_results": transformed_results},
                         logger_name="tool.semgrep",
                     )
@@ -77,7 +73,6 @@ class SemgrepTool(BaseTool):
                 else:
                     log_with_context(
                         message="Semgrep Failed",
-                        span=span,
                         level=logging.ERROR,
                         extra={
                             "execution_time_seconds": execution_time.total_seconds()
@@ -98,7 +93,6 @@ class SemgrepTool(BaseTool):
             except Exception as ex:
                 log_with_context(
                     message="Semgrep Failed",
-                    span=span,
                     level=logging.CRITICAL,
                     extra={"exception": ex},
                     logger_name="tool.semgrep",
