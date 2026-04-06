@@ -55,7 +55,7 @@ class PipAuditTool(BaseTool):
         )
 
     async def run(self, target_path: str) -> PipAuditResult:
-        with create_span("tool.pip_audit") as span:
+        with create_span("tool.pip_audit"):
             server_script = Path(__file__).resolve().parent / "pip_audit_server.py"
 
             server_params = StdioServerParameters(
@@ -65,7 +65,6 @@ class PipAuditTool(BaseTool):
             log_with_context(
                 message=f"Starting pip-audit server with command: "
                 f"{server_params.command} {server_params.args}",
-                span=span,
                 logger_name="tool.pip_audit",
             )
             async with stdio_client(server_params) as (read, write):  # noqa: SIM117
@@ -73,7 +72,6 @@ class PipAuditTool(BaseTool):
                     await session.initialize()
                     log_with_context(
                         message="Client Session Initialized ",
-                        span=span,
                         logger_name="tool.pip_audit",
                     )
                     start_time = datetime.datetime.now()
@@ -86,7 +84,6 @@ class PipAuditTool(BaseTool):
                         message="MCP result obtained from pip-audit server"
                         f"Result: {mcp_result}",
                         extra={"execution_time_seconds": execution_time},
-                        span=span,
                         logger_name="tool.pip_audit",
                     )
             content_block = mcp_result.content[0]
@@ -94,7 +91,6 @@ class PipAuditTool(BaseTool):
                 log_with_context(
                     message="Did not receive expected text content.",
                     level=logging.ERROR,
-                    span=span,
                     logger_name="tool.pip_audit",
                 )
                 raise ValueError("Expected text response from pip-audit server")
@@ -103,7 +99,6 @@ class PipAuditTool(BaseTool):
             log_with_context(
                 message="Calling Transform function for pip-audit output",
                 level=logging.INFO,
-                span=span,
                 logger_name="tool.pip_audit",
             )
 
@@ -121,7 +116,6 @@ class PipAuditTool(BaseTool):
             result = self.transform_pip_audit_output(target_path, content)
             log_with_context(
                 message=f"Transformed pip-audit output: {result}",
-                span=span,
                 logger_name="tool.pip_audit",
             )
             return result
