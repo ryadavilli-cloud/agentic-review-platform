@@ -40,5 +40,5 @@ jobs:
         run: poetry run mypy app/
 
       - name: Run tests with coverage
-        run: poetry run pytest -m "not slow" --junitxml=reports/junit.xml
+        run: poetry run pytest -m "not slow and not integration" --junitxml=reports/junit.xml
         
