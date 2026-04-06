@@ -20,6 +20,14 @@ class PipAuditTool(BaseTool):
     def tool_name(self) -> str:
         return "pip-audit"
 
+    @property
+    def target_file(self) -> str:
+        return "requirements.txt"
+
+    @property
+    def description(self) -> str:
+        return "Scans Python dependencies for known vulnerabilities using pip-audit."
+
     def transform_pip_audit_output(
         self, target_path: str, raw_output: str
     ) -> PipAuditResult:

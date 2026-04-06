@@ -12,9 +12,12 @@ class ReviewRequest(BaseModel):
     code_snippet: str | None = None
     review_type: ReviewType = ReviewType.security
     options: dict[str, object] | None = None
+    local_path: str | None = None
 
     @model_validator(mode="after")
     def validate_request(self) -> Self:
-        if not self.repository_url and not self.code_snippet:
-            raise ValueError("Either repository_url or code_snippet must be provided")
+        if not self.repository_url and not self.code_snippet and not self.local_path:
+            raise ValueError(
+                "Either repository_url, code_snippet, or local_path must be provided"
+            )
         return self
