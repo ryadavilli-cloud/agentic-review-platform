@@ -1,12 +1,13 @@
-from typing import Any  # Assuming tool_list is a list of tools, adjust as needed
+from openai import AzureOpenAI, OpenAI
 
 from app.models import ReviewRequest, SecurityReport
+from app.tools.base import BaseTool
 
 # Assuming ReviewRequest and SecurityReport are defined elsewhere, e.g., in app.models
 
 
 class ReviewAgent:
-    def __init__(self, tool_list: list[Any], llm_client: Any):
+    def __init__(self, tool_list: list[BaseTool], llm_client: OpenAI | AzureOpenAI):
         self.tool_list = tool_list
         self.llm_client = llm_client
 

@@ -16,6 +16,14 @@ class SemgrepTool(BaseTool):
     def tool_name(self) -> str:
         return "semgrep"
 
+    @property
+    def description(self) -> str:
+        return "Scans code for patterns and potential issues using Semgrep."
+
+    @property
+    def target_file(self) -> str | None:
+        return None
+
     async def run(self, target_path: str) -> SemgrepResult:
         with create_span("tool.semgrep"):
             # In a real implementation, run the semgrep command and get the output

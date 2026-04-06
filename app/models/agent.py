@@ -10,6 +10,7 @@ class PlannedStep(BaseModel):
     description: str
     status: StepStatus = StepStatus.planned
     result: ToolResult | None = None
+    target_path: str | None = None
 
 
 class ExecutionPlan(BaseModel):
