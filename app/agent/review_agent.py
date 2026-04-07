@@ -1,9 +1,17 @@
+from pathlib import Path
+from time import perf_counter
+
 from openai import AzureOpenAI, OpenAI
 
-from app.models import ReviewRequest, SecurityReport
+from app.agent.orchestrator import (
+    assemble_findings,
+    build_report_metadata,
+    compute_risk_score,
+    create_execution_plan,
+    execute_plan,
+)
+from app.models import AnalysisStatus, ReviewRequest, SecurityReport
 from app.tools.base import BaseTool
-
-# Assuming ReviewRequest and SecurityReport are defined elsewhere, e.g., in app.models
 
 
 class ReviewAgent:
@@ -12,5 +20,39 @@ class ReviewAgent:
         self.llm_client = llm_client
 
     async def run(self, request: ReviewRequest) -> SecurityReport:
-        # Stub implementation
-        return SecurityReport(request=request, findings=[], score=0.0)
+        if request.local_path is None:
+            raise ValueError("ReviewRequest.local_path is required to run the review")
+
+        report = SecurityReport(
+            request=request,
+            status=AnalysisStatus.planning,
+            findings=[],
+            summary="",
+            score=0.0,
+        )
+
+        local_path = Path(request.local_path)
+
+        execution_plan = create_execution_plan(
+            local_path=local_path,
+            tools=self.tool_list,
+            review_request=request,
+        )
+
+        report.execution_plan = execution_plan
+        report.status = AnalysisStatus.analyzing
+
+        started_at = perf_counter()
+        completed_plan = await execute_plan(
+            execution_plan=execution_plan,
+            tools=self.tool_list,
+        )
+        duration_seconds = perf_counter() - started_at
+
+        report.execution_plan = completed_plan
+        report.findings = assemble_findings(completed_plan)
+        report.metadata = build_report_metadata(completed_plan, duration_seconds)
+        report.score = compute_risk_score(report.findings)
+        report.status = AnalysisStatus.completed
+
+        return report
