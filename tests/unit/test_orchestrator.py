@@ -23,10 +23,10 @@ from app.tools.semgrep import SemgrepTool
 @pytest.mark.unit
 def test_create_execution_plan_valid():
     result = create_execution_plan(
-        local_path=Path("/fake/path"),
+        local_path=Path("\\fake\\path"),
         tools=[SemgrepTool(), PipAuditTool()],
         review_request=ReviewRequest(
-            local_path="/fake/path",
+            local_path="\\fake\\path",
         ),
     )
 
@@ -46,10 +46,10 @@ def test_create_execution_plan_valid():
 @pytest.mark.unit
 def test_create_execution_plan_no_tools():
     result = create_execution_plan(
-        local_path=Path("/fake/path"),
+        local_path=Path("\\fake\\path"),
         tools=[],
         review_request=ReviewRequest(
-            local_path="/fake/path",
+            local_path="\\fake\\path",
         ),
     )
 
@@ -60,10 +60,10 @@ def test_create_execution_plan_no_tools():
 def test_create_execution_plan_tool_with_no_target_file():
 
     result = create_execution_plan(
-        local_path=Path("/fake/path"),
+        local_path=Path("\\fake\\path"),
         tools=[SemgrepTool()],
         review_request=ReviewRequest(
-            local_path="/fake/path",
+            local_path="\\fake\\path",
         ),
     )
 
