@@ -32,12 +32,16 @@ def test_create_execution_plan_valid():
 
     assert len(result.steps) == 2
     assert result.steps[0].tool_name == "semgrep"
-    assert result.steps[0].target_path == "\\fake\\path"
+    assert result.steps[0].target_path is not None
+    assert Path(result.steps[0].target_path) == Path("\\fake\\path")
     assert result.steps[0].step_number == 1
     assert result.steps[0].status == StepStatus.planned
     assert result.steps[0].result is None
     assert result.steps[1].tool_name == "pip-audit"
-    assert result.steps[1].target_path == "\\fake\\path\\requirements.txt"
+    assert result.steps[1].target_path is not None
+    assert (
+        Path(result.steps[1].target_path) == Path("\\fake\\path") / "requirements.txt"
+    )
     assert result.steps[1].step_number == 2
     assert result.steps[1].status == StepStatus.planned
     assert result.steps[1].result is None
