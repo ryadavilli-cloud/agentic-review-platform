@@ -8,4 +8,6 @@ Severity = Enum("Severity", ["critical", "high", "medium", "low", "info"])
 FindingCategory = Enum(
     "FindingCategory", ["vulnerability", "dependency", "configuration", "code_quality"]
 )
-StepStatus = Enum("StepStatus", ["planned", "running", "complete", "failed", "skipped"])
+StepStatus = Enum(
+    "StepStatus", ["planned", "running", "completed", "failed", "skipped"]
+)
