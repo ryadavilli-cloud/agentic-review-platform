@@ -17,6 +17,13 @@ class ReportMetadata(BaseModel):
     timestamp: datetime.datetime
 
 
+class RecommendationGroup(BaseModel):
+    theme: str
+    finding_titles: list[str]
+    impact: str
+    remediation: str
+
+
 class SecurityReport(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     request: ReviewRequest
@@ -25,4 +32,5 @@ class SecurityReport(BaseModel):
     metadata: ReportMetadata | None = None
     execution_plan: ExecutionPlan | None = None
     summary: str = ""
+    recommendation_groups: list[RecommendationGroup] = []
     score: float = Field(ge=0.0, le=100.0)

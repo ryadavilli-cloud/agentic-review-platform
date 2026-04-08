@@ -2,6 +2,7 @@ import pytest
 from openai import OpenAI
 
 from app.agent.review_agent import ReviewAgent
+from app.config import Settings
 from app.models import (
     AnalysisStatus,
     Evidence,
@@ -99,7 +100,9 @@ async def test_review_agent_run_happy_path() -> None:
         DummySuccessTool("semgrep", findings_1),
         DummySuccessTool("pip-audit", findings_2, target_file="requirements.txt"),
     ]
-    agent = ReviewAgent(tool_list=tools, llm_client=OpenAI(api_key="test"))
+    agent = ReviewAgent(
+        tool_list=tools, llm_client=OpenAI(api_key="test"), settings=Settings()
+    )
 
     request = ReviewRequest(local_path="\\tmp\\test-repo")
 
@@ -127,7 +130,9 @@ async def test_review_agent_run_happy_path() -> None:
 @pytest.mark.asyncio
 async def test_review_agent_run_missing_local_path() -> None:
     tools: list[BaseTool] = []
-    agent = ReviewAgent(tool_list=tools, llm_client=OpenAI(api_key="test"))
+    agent = ReviewAgent(
+        tool_list=tools, llm_client=OpenAI(api_key="test"), settings=Settings()
+    )
 
     request = ReviewRequest(
         repository_url="https://github.com/example/repo",
@@ -152,7 +157,9 @@ async def test_review_agent_run_one_tool_fails() -> None:
             "pip-audit", successful_findings, target_file="requirements.txt"
         ),
     ]
-    agent = ReviewAgent(tool_list=tools, llm_client=OpenAI(api_key="test"))
+    agent = ReviewAgent(
+        tool_list=tools, llm_client=OpenAI(api_key="test"), settings=Settings()
+    )
 
     request = ReviewRequest(local_path="\\tmp\\test-repo")
 
@@ -189,7 +196,9 @@ async def test_review_agent_run_no_findings() -> None:
         DummySuccessTool("semgrep", []),
         DummySuccessTool("pip-audit", [], target_file="requirements.txt"),
     ]
-    agent = ReviewAgent(tool_list=tools, llm_client=OpenAI(api_key="test"))
+    agent = ReviewAgent(
+        tool_list=tools, llm_client=OpenAI(api_key="test"), settings=Settings()
+    )
 
     request = ReviewRequest(local_path="\\tmp\\test-repo")
 
