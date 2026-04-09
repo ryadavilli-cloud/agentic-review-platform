@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
+from app.api import router
 from app.config import get_settings
 from app.telemetry.logging import setup_logging
 from app.telemetry.middleware import correlation_id_middleware
@@ -25,8 +26,11 @@ app = FastAPI(
     description="AI-powered code and risk review agent",
     version="0.1.0",
     lifespan=lifespan,
+    openapi_tags=[
+        {"name": "Review", "description": "Security review and analysis endpoints"}
+    ],
 )
-
+app.include_router(router.router)
 app.middleware("http")(correlation_id_middleware)
 FastAPIInstrumentor.instrument_app(app)
 
