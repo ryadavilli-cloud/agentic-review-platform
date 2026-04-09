@@ -1,4 +1,3 @@
-import json
 import logging
 from pathlib import Path
 from time import perf_counter
@@ -97,19 +96,16 @@ class ReviewAgent:
             llm_response = handle_synthesis_response(llm_raw_response)
 
             report.summary = str(llm_response.get("summary"))
-            llm_recommendation_groups = json.loads(
-                str(llm_response.get("recommendation_groups"))
+            llm_recommendation_groups: object = llm_response.get(
+                "recommendation_groups", []
             )
 
-            for recommendation_group in llm_recommendation_groups:
-                report.recommendation_groups.append(
-                    RecommendationGroup(
-                        finding_titles=recommendation_group.get("finding_titles"),
-                        theme=recommendation_group.get("theme"),
-                        impact=recommendation_group.get("impact"),
-                        remediation=recommendation_group.get("remediation"),
-                    )
-                )
+            if isinstance(llm_recommendation_groups, list):
+                for recommendation_group in llm_recommendation_groups:  # type: ignore[union-attr]
+                    if isinstance(recommendation_group, dict):
+                        report.recommendation_groups.append(
+                            RecommendationGroup.model_validate(recommendation_group)
+                        )
 
         except Exception as ex:
             log_with_context(
