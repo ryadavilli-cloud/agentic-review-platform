@@ -1,9 +1,529 @@
 {
   "version": "1.0",
   "code_findings": [
-    {"id": "CODE-012", "tool": "semgrep", "type": "hardcoded-secret", "file": "app.py", "line": 13, "severity": "high", "detectable": false, "detectable_reason": "Semgrep OSS lacks generic secret detection"}
+    {
+      "id": "CODE-001",
+      "tool": "semgrep",
+      "type": "sql-injection",
+      "file": "app.py",
+      "line": 27,
+      "severity": "high",
+      "detectable": true,
+      "description": "SQL injection in get_user via f-string"
+    },
+    {
+      "id": "CODE-002",
+      "tool": "semgrep",
+      "type": "sql-injection",
+      "file": "app.py",
+      "line": 45,
+      "severity": "high",
+      "detectable": true,
+      "description": "SQL injection in create_user via f-string"
+    },
+    {
+      "id": "CODE-003",
+      "tool": "semgrep",
+      "type": "sql-injection",
+      "file": "app.py",
+      "line": 64,
+      "severity": "high",
+      "detectable": true,
+      "description": "SQL injection in import_users via f-string"
+    },
+    {
+      "id": "CODE-004",
+      "tool": "semgrep",
+      "type": "sql-injection",
+      "file": "app.py",
+      "line": 102,
+      "severity": "high",
+      "detectable": true,
+      "description": "SQL injection in register_user via f-string"
+    },
+    {
+      "id": "CODE-005",
+      "tool": "semgrep",
+      "type": "insecure-deserialization",
+      "file": "app.py",
+      "line": 38,
+      "severity": "high",
+      "detectable": true,
+      "description": "pickle.loads on request data in create_user"
+    },
+    {
+      "id": "CODE-006",
+      "tool": "semgrep",
+      "type": "insecure-deserialization",
+      "file": "app.py",
+      "line": 93,
+      "severity": "high",
+      "detectable": true,
+      "description": "pickle.loads on request data in register_user"
+    },
+    {
+      "id": "CODE-007",
+      "tool": "semgrep",
+      "type": "command-injection",
+      "file": "app.py",
+      "line": 86,
+      "severity": "high",
+      "detectable": true,
+      "description": "subprocess.run with shell=True on user input"
+    },
+    {
+      "id": "CODE-008",
+      "tool": "semgrep",
+      "type": "path-traversal",
+      "file": "app.py",
+      "line": 72,
+      "severity": "high",
+      "detectable": true,
+      "description": "open() with unsanitized filename"
+    },
+    {
+      "id": "CODE-009",
+      "tool": "semgrep",
+      "type": "weak-crypto",
+      "file": "app.py",
+      "line": 96,
+      "severity": "medium",
+      "detectable": true,
+      "description": "MD5 for password hashing"
+    },
+    {
+      "id": "CODE-010",
+      "tool": "semgrep",
+      "type": "ssrf",
+      "file": "app.py",
+      "line": 113,
+      "severity": "high",
+      "detectable": true,
+      "description": "requests.get with user-controlled URL"
+    },
+    {
+      "id": "CODE-011",
+      "tool": "semgrep",
+      "type": "debug-mode",
+      "file": "app.py",
+      "line": 121,
+      "severity": "medium",
+      "detectable": true,
+      "description": "Flask debug=True in production"
+    },
+    {
+      "id": "CODE-012",
+      "tool": "semgrep",
+      "type": "hardcoded-secret",
+      "file": "app.py",
+      "line": 13,
+      "severity": "high",
+      "detectable": false,
+      "detectable_reason": "Semgrep OSS lacks generic secret detection",
+      "description": "DB_PASSWORD as plain string"
+    },
+    {
+      "id": "CODE-013",
+      "tool": "semgrep",
+      "type": "unsafe-deserialization",
+      "file": "app.py",
+      "line": 18,
+      "severity": "high",
+      "detectable": false,
+      "detectable_reason": "yaml.load without SafeLoader \u2014 function not in Flask route context, taint rules don't trigger",
+      "description": "yaml.load without SafeLoader"
+    }
   ],
   "dependency_findings": [
-    {"id": "DEP-001", "tool": "pip-audit", "package": "flask", "version": "2.3.2", "cve": "CVE-2026-27205", "severity": "critical", "detectable": true, "planned": true}
+    {
+      "id": "DEP-001",
+      "tool": "pip-audit",
+      "package": "flask",
+      "version": "2.3.2",
+      "cve": "CVE-2026-27205",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-002",
+      "tool": "pip-audit",
+      "package": "jinja2",
+      "version": "3.1.2",
+      "cve": "CVE-2024-22195",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-003",
+      "tool": "pip-audit",
+      "package": "jinja2",
+      "version": "3.1.2",
+      "cve": "CVE-2024-34064",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-004",
+      "tool": "pip-audit",
+      "package": "jinja2",
+      "version": "3.1.2",
+      "cve": "CVE-2024-56326",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-005",
+      "tool": "pip-audit",
+      "package": "jinja2",
+      "version": "3.1.2",
+      "cve": "CVE-2024-56201",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-006",
+      "tool": "pip-audit",
+      "package": "jinja2",
+      "version": "3.1.2",
+      "cve": "CVE-2025-27516",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-007",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2023-46136",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-008",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2024-34069",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-009",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2024-49766",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-010",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2024-49767",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-011",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2025-66221",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-012",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2026-21860",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-013",
+      "tool": "pip-audit",
+      "package": "werkzeug",
+      "version": "2.3.7",
+      "cve": "CVE-2026-27199",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-014",
+      "tool": "pip-audit",
+      "package": "pyyaml",
+      "version": "5.3.1",
+      "cve": "CVE-2020-14343",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-015",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2023-43804",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-016",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2023-45803",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-017",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2024-37891",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-018",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2025-50181",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-019",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2025-66418",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-020",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2025-66471",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-021",
+      "tool": "pip-audit",
+      "package": "urllib3",
+      "version": "1.26.5",
+      "cve": "CVE-2026-21441",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-022",
+      "tool": "pip-audit",
+      "package": "requests",
+      "version": "2.25.0",
+      "cve": "CVE-2023-32681",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-023",
+      "tool": "pip-audit",
+      "package": "requests",
+      "version": "2.25.0",
+      "cve": "CVE-2024-35195",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-024",
+      "tool": "pip-audit",
+      "package": "requests",
+      "version": "2.25.0",
+      "cve": "CVE-2024-47081",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-025",
+      "tool": "pip-audit",
+      "package": "requests",
+      "version": "2.25.0",
+      "cve": "CVE-2026-25645",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-026",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2023-38325",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-027",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2023-49083",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-028",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2024-26130",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-029",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "GHSA-jm77-qphf-c4w8",
+      "severity": "high",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-030",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2023-50782",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-031",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "GHSA-v8gr-m533-ghj9",
+      "severity": "high",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-032",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2024-0727",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-033",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "GHSA-h4gh-qq45-vh27",
+      "severity": "high",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-034",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2026-26007",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-035",
+      "tool": "pip-audit",
+      "package": "cryptography",
+      "version": "41.0.0",
+      "cve": "CVE-2026-34073",
+      "severity": "critical",
+      "detectable": true,
+      "planned": true
+    },
+    {
+      "id": "DEP-036",
+      "tool": "pip-audit",
+      "package": "gunicorn",
+      "version": "21.2.0",
+      "cve": "CVE-2024-1135",
+      "severity": "critical",
+      "detectable": true,
+      "planned": false
+    },
+    {
+      "id": "DEP-037",
+      "tool": "pip-audit",
+      "package": "gunicorn",
+      "version": "21.2.0",
+      "cve": "CVE-2024-6827",
+      "severity": "critical",
+      "detectable": true,
+      "planned": false
+    },
+    {
+      "id": "DEP-038",
+      "tool": "pip-audit",
+      "package": "sqlparse",
+      "version": "0.5.0",
+      "cve": "GHSA-27jp-wm6q-gp25",
+      "severity": "high",
+      "detectable": true,
+      "planned": false
+    },
+    {
+      "id": "DEP-039",
+      "tool": "pip-audit",
+      "package": "idna",
+      "version": "2.10",
+      "cve": "CVE-2024-3651",
+      "severity": "critical",
+      "detectable": true,
+      "planned": false
+    }
   ]
 }
