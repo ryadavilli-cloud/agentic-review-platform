@@ -8,6 +8,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from app.api import router
 from app.config import get_settings
 from app.telemetry.logging import setup_logging
+from app.telemetry.metrics import setup_metrics
 from app.telemetry.middleware import correlation_id_middleware
 from app.telemetry.tracing import setup_tracing
 
@@ -16,9 +17,11 @@ from app.telemetry.tracing import setup_tracing
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     settings = get_settings()  # Load settings and cache them
     setup_logging(settings.log_level)
-    provider = setup_tracing(settings)
+    trace_provider = setup_tracing(settings)
+    meter_provider = setup_metrics(settings)
     yield  # Application runs here
-    provider.shutdown()
+    trace_provider.shutdown()
+    meter_provider.shutdown()
 
 
 app = FastAPI(

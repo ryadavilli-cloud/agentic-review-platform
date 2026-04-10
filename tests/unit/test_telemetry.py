@@ -1,15 +1,23 @@
 import json
 import logging
+from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
 from opentelemetry import trace
+from opentelemetry.metrics import Meter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import (
+    HistogramDataPoint,
+    InMemoryMetricReader,
+)
 from opentelemetry.trace import TracerProvider
 
 from app.config import get_settings
 from app.main import app
 from app.telemetry.logging import JsonFormatter
 from app.telemetry.tracing import get_tracer, setup_tracing
+from tests.unit.test_telemetry_helpers import get_metric
 
 
 @pytest.mark.unit
@@ -60,3 +68,42 @@ def test_jsonformatter():
     assert result["level"] == "INFO"
     assert result["correlation_id"] == "no_correlation_id"
     assert result["timestamp"] is not None
+
+
+@pytest.fixture
+def get_meter_reader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Generator[InMemoryMetricReader, None, None]:
+    reader = InMemoryMetricReader()
+    provider = MeterProvider(metric_readers=[reader])
+
+    def fake_get_meter(name: str) -> Meter:
+        return provider.get_meter(name)
+
+    monkeypatch.setattr("app.telemetry.helpers.get_meter", fake_get_meter)
+
+    yield reader
+
+    provider.shutdown()
+
+
+@pytest.mark.unit
+def test_middleware_metric_attributes_include_method_route_and_status_code(
+    get_meter_reader: InMemoryMetricReader,
+) -> None:
+    client = TestClient(app)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+
+    duration_metric = get_metric(get_meter_reader, "http.server.request.duration")
+
+    data_point = duration_metric.data.data_points[0]
+    assert isinstance(data_point, HistogramDataPoint)
+
+    attributes = data_point.attributes
+    assert attributes is not None
+    assert attributes["http.method"] == "GET"
+    assert attributes["http.route"] == "/health"
+    assert attributes["http.status_code"] == 200
