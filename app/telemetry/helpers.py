@@ -1,11 +1,12 @@
 import logging
 from contextlib import AbstractContextManager
-from typing import Any
+from typing import Any, Literal
 
 from opentelemetry import trace
 from opentelemetry.trace import Span, Tracer
 
 from app.telemetry.logging import correlation_id_var
+from app.telemetry.metrics import get_meter
 from app.telemetry.tracing import get_tracer
 
 
@@ -31,3 +32,30 @@ def log_with_context(
     }
 
     logger.log(level, message, extra=dict_extra)
+
+
+METER_NAME = "agentic_review_platform.metrics"
+
+type MetricType = Literal["counter", "histogram"]
+type MetricAttributes = dict[str, str | bool | int | float]
+
+
+def record_metric(
+    name: str,
+    value: int | float,
+    metric_type: MetricType,
+    attributes: MetricAttributes | None = None,
+) -> None:
+    meter = get_meter(METER_NAME)
+    metric_attributes = attributes or {}
+
+    if metric_type == "counter":
+        if value < 0:
+            raise ValueError("Counter metrics must use a non-negative value")
+
+        counter = meter.create_counter(name)
+        counter.add(value, attributes=metric_attributes)
+        return
+
+    histogram = meter.create_histogram(name)
+    histogram.record(value, attributes=metric_attributes)
