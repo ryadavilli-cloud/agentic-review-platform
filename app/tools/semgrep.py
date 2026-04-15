@@ -33,7 +33,14 @@ class SemgrepTool(BaseTool):
             try:
                 timer_start = datetime.now()
                 env = {**os.environ, "PYTHONUTF8": "1"}
-                command = ["semgrep", "scan", "--json", "--config=auto", target_path]
+                command = [
+                    "semgrep",
+                    "scan",
+                    "--json",
+                    "--config=auto",
+                    target_path,
+                    "--no-git-ignore",
+                ]
 
                 log_with_context(
                     message=f"Running Semgrep command: {' '.join(command)}",
